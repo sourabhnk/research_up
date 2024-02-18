@@ -3,6 +3,7 @@ from transformers import BartTokenizer, BartForConditionalGeneration
 import streamlit as st
 import PyPDF2
 import re
+import requests
 
 
 def get_pdf_reader(uploaded_file):
@@ -44,14 +45,32 @@ def find_sections_with_heuristics(pdf_reader):
 
     return sections
 
+API_URL = "https://api-inference.huggingface.co/models/facebook/bart-large-cnn"
+headers = {"Authorization": "Bearer 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"}
+
+def query(payload):
+    response = requests.post(API_URL, headers=headers, json=payload)
+    return response.json()
 
 def generate_summary(context):
-    tokenizer = BartTokenizer.from_pretrained("facebook/bart-large-cnn")
-    summarization_model = BartForConditionalGeneration.from_pretrained("facebook/bart-large-cnn")
-    inputs = tokenizer([context], max_length=1024, return_tensors='pt', truncation=True)
-    summary_ids = summarization_model.generate(inputs['input_ids'], num_beams=4, length_penalty=2.0, max_length=400, min_length=60, no_repeat_ngram_size=3)
-    summary = tokenizer.decode(summary_ids[0], skip_special_tokens=True)
-    return summary
+    payload = {
+        "inputs": context,
+        "parameters": {"min_length": 60, "max_length": 400},
+    }
+    response = requests.post(API_URL, headers=headers, json=payload)
+
+    # Check for request success (HTTP Status Code 200)
+    if response.status_code == 200:
+        result = response.json()
+
+        # The API typically returns a list of results, so we take the first one.
+        if isinstance(result, list) and len(result) > 0 and 'summary_text' in result[0]:
+            return result[0]['summary_text']
+        else:
+            raise ValueError("Unexpected response format or empty result")
+    else:
+        # Handle unsuccessful requests
+        raise Exception(f"Failed to generate summary, status code: {response.status_code}, response: {response.text}")
 
 
 def extract_and_summarize_section(pdf_reader, start_page, end_page=None):
