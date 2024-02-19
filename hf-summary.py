@@ -45,7 +45,7 @@ def find_sections_with_heuristics(pdf_reader):
 
     return sections
 
-API_URL = "https://api-inference.huggingface.co/models/facebook/bart-large-cnn"
+API_URL = "https://api-inference.huggingface.co/models/globuslabs/ScholarBERT"
 headers = {"Authorization": "Bearer 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"}
 
 def query(payload):
