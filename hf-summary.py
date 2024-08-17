@@ -45,7 +45,7 @@ def find_sections_with_heuristics(pdf_reader):
 
     return sections
 
-API_URL = "https://api-inference.huggingface.co/models/nomic-ai/nomic-embed-text-v1.5"
+API_URL = "https://api-inference.huggingface.co/models/nomic-ai/nomic-embed-text-v1.5,trust_remote_code=True"
 headers = {"Authorization": "Bearer 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"}
 
 def query(payload):
