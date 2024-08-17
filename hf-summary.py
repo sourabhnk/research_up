@@ -45,7 +45,7 @@ def find_sections_with_heuristics(pdf_reader):
 
     return sections
 
-API_URL = "https://api-inference.huggingface.co/models/google-bert/bert-base-uncased,trust_remote_code=True"
+API_URL = "https://api-inference.huggingface.co/models/google-bert/bert-base-uncased"
 headers = {"Authorization": "Bearer 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"}
 
 def query(payload):
